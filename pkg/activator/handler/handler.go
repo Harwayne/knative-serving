@@ -31,6 +31,7 @@ import (
 	tracingconfig "knative.dev/pkg/tracing/config"
 	"knative.dev/serving/pkg/activator"
 	activatorconfig "knative.dev/serving/pkg/activator/config"
+	"knative.dev/serving/pkg/activator/handler/b3traceparent"
 	"knative.dev/serving/pkg/activator/util"
 	"knative.dev/serving/pkg/network"
 	"knative.dev/serving/pkg/queue"
@@ -55,7 +56,10 @@ func New(ctx context.Context, t Throttler) http.Handler {
 	defaultTransport := pkgnet.AutoTransport
 	return &activationHandler{
 		transport:        defaultTransport,
-		tracingTransport: &ochttp.Transport{Base: defaultTransport},
+		tracingTransport: &ochttp.Transport{
+			Base: defaultTransport,
+			Propagation: &b3traceparent.HTTPFormat{},
+		},
 		throttler:        t,
 		bufferPool:       network.NewBufferPool(),
 	}

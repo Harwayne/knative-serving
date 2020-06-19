@@ -46,6 +46,7 @@ import (
 	"knative.dev/pkg/tracing"
 	tracingconfig "knative.dev/pkg/tracing/config"
 	"knative.dev/serving/pkg/activator"
+	"knative.dev/serving/pkg/activator/handler/b3traceparent"
 	activatorutil "knative.dev/serving/pkg/activator/util"
 	pkghttp "knative.dev/serving/pkg/http"
 	"knative.dev/serving/pkg/http/handler"
@@ -373,6 +374,7 @@ func buildTransport(env config, logger *zap.SugaredLogger) http.RoundTripper {
 
 	return &ochttp.Transport{
 		Base: pkgnet.AutoTransport,
+		Propagation: &b3traceparent.HTTPFormat{},
 	}
 }
 

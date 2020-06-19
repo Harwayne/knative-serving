@@ -40,6 +40,7 @@ import (
 	tracetesting "knative.dev/pkg/tracing/testing"
 	"knative.dev/serving/pkg/activator"
 	activatorconfig "knative.dev/serving/pkg/activator/config"
+	"knative.dev/serving/pkg/activator/handler/b3traceparent"
 	activatortest "knative.dev/serving/pkg/activator/testing"
 	"knative.dev/serving/pkg/activator/util"
 	"knative.dev/serving/pkg/apis/serving"
@@ -253,7 +254,10 @@ func TestActivationHandlerTraceSpans(t *testing.T) {
 
 			handler := (New(ctx, fakeThrottler{})).(*activationHandler)
 			handler.transport = rt
-			handler.tracingTransport = &ochttp.Transport{Base: rt}
+			handler.tracingTransport = &ochttp.Transport{
+				Base: rt,
+				Propagation: &b3traceparent.HTTPFormat{},
+			}
 
 			// Set up config store to populate context.
 			configStore := setupConfigStore(t, logging.FromContext(ctx))

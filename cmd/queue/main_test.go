@@ -33,6 +33,7 @@ import (
 	tracingconfig "knative.dev/pkg/tracing/config"
 	tracetesting "knative.dev/pkg/tracing/testing"
 	"knative.dev/serving/pkg/activator"
+	"knative.dev/serving/pkg/activator/handler/b3traceparent"
 	"knative.dev/serving/pkg/network"
 	"knative.dev/serving/pkg/queue"
 	"knative.dev/serving/pkg/queue/health"
@@ -253,6 +254,7 @@ func TestQueueTraceSpans(t *testing.T) {
 				}
 				proxy.Transport = &ochttp.Transport{
 					Base: pkgnet.AutoTransport,
+					Propagation: &b3traceparent.HTTPFormat{},
 				}
 
 				h := proxyHandler(breaker, network.NewRequestStats(time.Now()), true /*tracingEnabled*/, proxy)
